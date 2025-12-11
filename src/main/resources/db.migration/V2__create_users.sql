@@ -27,6 +27,6 @@ INSERT INTO users (
     '+573001112233',
     1, -- rol ADMIN
     'admin@plazalote.com',
-    '$2a$10$VdCkOlVxwl6Dur43UDGbKuM9bHTwXxgK8.G2krTkb2z6IWCgJH3Ay'
+    '$2a$12$pdN8xBe5UHFSPFd0jVbUWucu9OS7sBL74ngo.8KCSEWk.cdimf/Ta' --admin1234
 );
 

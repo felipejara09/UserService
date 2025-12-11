@@ -13,28 +13,28 @@ import java.time.LocalDate;
 @Setter
 @Data
 public class UserRequestDto {
-    @NotBlank
+    @NotBlank(message = "Name is required")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "Last name is required")
     private String lastName;
 
-    @NotBlank
+    @NotBlank(message = "Document ID is required")
     private String documentId;
 
-    @NotBlank
+    @NotBlank(message = "Phone number is required")
     private String phoneNumber;
 
-    @NotNull
+    @NotNull(message = "Birth date is required")
     private LocalDate birthDate;
 
-    @NotNull
+    @NotNull(message = "Role ID is required")
     private Long roleId;
 
-    @Email
-    @NotBlank
+    @Email(message = "Email format is invalid")
+    @NotBlank(message = "Email is required")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "Password is required")
     private String password;
 }

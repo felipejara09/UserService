@@ -17,8 +17,10 @@ spring:
     enabled: true
     locations: classpath:db.migration
 
-  jwt:
-    secret: superSecretClaveParaElJwt123456789
-    expiration: 3600000
+jwt:
+  secret: "EstaEsUnaClaveSuperSecretaDeAlMenos32Chars!!"
+  expiration: 3600000
+
+
 appDescription: "Pragma Powerup"
 appVersion: "1.0.0"

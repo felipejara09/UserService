@@ -37,7 +37,7 @@ public class UserRestController {
                     content = @Content)
     })
 
-    //@PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/owners")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<UserResponseDto> createOwner(

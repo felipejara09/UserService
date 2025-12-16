@@ -34,4 +34,13 @@ public class ControllerAdvisor {
         );
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(ForbiddenRestaurantAccessException.class)
+    public ResponseEntity<ExceptionResponse> handleForbidden(ForbiddenRestaurantAccessException ex) {
+        ExceptionResponse response = new ExceptionResponse(
+                ex.getMessage(),
+                HttpStatus.FORBIDDEN.toString()
+        );
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
 }

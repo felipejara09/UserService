@@ -1,6 +1,8 @@
 server:
   port: 8081
-
+services:
+  plazoleta:
+    base-url: http://localhost:8080
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5433/usuarios
@@ -17,10 +19,19 @@ spring:
     enabled: true
     locations: classpath:db.migration
 
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+
+
 jwt:
   secret: "EstaEsUnaClaveSuperSecretaDeAlMenos32Chars!!"
   expiration: 3600000
 
+logging:
+  level:
+    org.springframework.security: DEBUG
 
 appDescription: "Pragma Powerup"
 appVersion: "1.0.0"

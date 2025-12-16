@@ -1,7 +1,9 @@
-package com.pragma.powerup.infrastructure.configuration;
+package com.pragma.powerup.infrastructure.segurity;
 
 
 
+import com.pragma.powerup.infrastructure.configuration.JwtAuthenticationFilter;
+import com.pragma.powerup.infrastructure.configuration.JwtValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

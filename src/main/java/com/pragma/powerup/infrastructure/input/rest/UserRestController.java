@@ -1,5 +1,6 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
+import com.pragma.powerup.application.dto.request.EmployedRequestDto;
 import com.pragma.powerup.application.dto.request.UserRequestDto;
 import com.pragma.powerup.application.dto.response.UserResponseDto;
 import com.pragma.powerup.application.handler.IUserHandler;
@@ -18,7 +19,7 @@ import javax.validation.Valid;
 
 
 @RestController
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserRestController {
 
@@ -38,12 +39,21 @@ public class UserRestController {
     })
 
     @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/owners")
+    @PostMapping("admin/owners")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<UserResponseDto> createOwner(
             @Valid @RequestBody UserRequestDto ownerRequestDto) {
 
         UserResponseDto response = userHandler.createOwner(ownerRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/restaurants/{restaurantId}/employees")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createEmployee(
+            @PathVariable Long restaurantId,
+            @Valid @RequestBody EmployedRequestDto request
+    ) {
+        userHandler.createEmployed(request, restaurantId);
     }
 }

@@ -4,6 +4,7 @@ import com.pragma.powerup.domain.api.IAuthService;
 import com.pragma.powerup.domain.api.IUserService;
 import com.pragma.powerup.domain.spi.IJwtProviderPort;
 import com.pragma.powerup.domain.spi.IPasswordEncoderPort;
+import com.pragma.powerup.domain.spi.IRestaurantExternalServicePort;
 import com.pragma.powerup.domain.spi.IUserPersistencePort;
 import com.pragma.powerup.domain.usecase.AuthUseCase;
 import com.pragma.powerup.domain.usecase.UserUseCase;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -40,8 +42,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IJwtProviderPort jwtProviderPort(SecretKey jwtSecretKeys) {
-        return new JwtProviderAdapter(jwtSecret, jwtExpiration);
+    public IJwtProviderPort jwtProviderPort(SecretKey jwtSecretKey) {
+        return new JwtProviderAdapter(jwtSecretKey, jwtExpiration);
     }
 
     @Bean
@@ -66,16 +68,30 @@ public class BeanConfiguration {
     }
 
     @Bean
-    public IUserService userServicePort(IUserPersistencePort persistence,
-                                        IPasswordEncoderPort passwordEncoder,
-                                        UserDataValidator dataValidator,
-                                        UserBusinessValidator businessValidator) {
-        return new UserUseCase(persistence, passwordEncoder, dataValidator, businessValidator);
+    public IUserService userServicePort(
+            IUserPersistencePort userPersistencePort,
+            IPasswordEncoderPort passwordEncoderPort,
+            IRestaurantExternalServicePort restaurantExternalServicePort,
+            UserDataValidator dataValidator,
+            UserBusinessValidator businessValidator
+    ) {
+        return new UserUseCase(
+                userPersistencePort,
+                passwordEncoderPort,
+                restaurantExternalServicePort,
+                dataValidator,
+                businessValidator
+        );
     }
     @Bean
     public IAuthService authService(IUserPersistencePort userPersistencePort,
                                     IPasswordEncoderPort passwordEncoderPort,
                                     IJwtProviderPort jwtProviderPort) {
         return new AuthUseCase(userPersistencePort, passwordEncoderPort, jwtProviderPort);
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

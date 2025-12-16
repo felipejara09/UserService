@@ -2,25 +2,18 @@ package com.pragma.powerup.infrastructure.out.jpa.adapter;
 
 import com.pragma.powerup.domain.spi.IJwtProviderPort;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-//@Component
+
 public class JwtProviderAdapter implements IJwtProviderPort {
 
     private final SecretKey secretKey;
     private final long expirationMs;
 
-    public JwtProviderAdapter(
-            @Value("${jwt.secret}") String jwtSecret,
-            @Value("${jwt.expiration}") long expirationMs
-    ) {
-        this.secretKey = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    public JwtProviderAdapter(SecretKey secretKey, long expirationMs) {
+        this.secretKey = secretKey;
         this.expirationMs = expirationMs;
     }
 

@@ -4,7 +4,7 @@ import com.pragma.powerup.domain.spi.IPasswordEncoderPort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-//@Component
+
 public class PasswordEncoderAdapter implements IPasswordEncoderPort {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();

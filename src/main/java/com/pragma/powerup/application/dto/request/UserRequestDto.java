@@ -28,13 +28,11 @@ public class UserRequestDto {
     @NotNull(message = "Birth date is required")
     private LocalDate birthDate;
 
-    @NotNull(message = "Role ID is required")
-    private Long roleId;
-
     @Email(message = "Email format is invalid")
     @NotBlank(message = "Email is required")
     private String email;
 
     @NotBlank(message = "Password is required")
     private String password;
+
 }

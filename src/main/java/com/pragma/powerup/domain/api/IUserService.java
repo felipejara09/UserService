@@ -4,5 +4,6 @@ import com.pragma.powerup.domain.model.User;
 
 public interface IUserService {
     void createOwner(User user);
-    void createEmployed(User employed, Long restaurantId, String ownerId);
+    void createEmployed(User employed, Long restaurantId, String token);
+    void registerClient(User user);
 }

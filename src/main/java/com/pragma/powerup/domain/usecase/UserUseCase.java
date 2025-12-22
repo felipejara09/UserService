@@ -27,6 +27,7 @@ public class UserUseCase implements IUserService {
     @Override
     public void createOwner(User user) {
 
+        user.setRoleId(RoleConstants.ROLE_OWNER);
         dataValidator.validate(user);
 
         businessValidator.validate(user);
@@ -37,18 +38,39 @@ public class UserUseCase implements IUserService {
     }
 
     @Override
-    public void createEmployed(User employed, Long restaurantId, String ownerId) {
+    public void createEmployed(User employed, Long restaurantId, String token) {
 
-        if (!restaurantExternalServicePort.isRestaurantOwnedBy(restaurantId, ownerId)) {
+        if (!restaurantExternalServicePort.isRestaurantOwnedBy(restaurantId, token)) {
             throw new ForbiddenRestaurantAccessException();
         }
+
+        employed.setRestaurantId(restaurantId);
+
+
         employed.setRoleId(RoleConstants.ROLE_EMPLOYEE);
+
+        if (RoleConstants.ROLE_EMPLOYEE.equals(employed.getRoleId()) &&
+                employed.getRestaurantId() == null) {
+                throw new IllegalArgumentException("Employee must have a restaurantId");
+            }
+
         dataValidator.validate(employed);
         businessValidator.validate(employed);
 
-        employed.setRoleId(RoleConstants.ROLE_EMPLOYEE);
         employed.setPassword(passwordEncoder.encode(employed.getPassword()));
         persistence.save(employed);
+    }
+
+    @Override
+    public void registerClient(User user) {
+
+        user.setRoleId(RoleConstants.ROLE_CLIENT);
+        dataValidator.validate(user);
+        businessValidator.validate(user);
+
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // bcrypt
+
+        persistence.save(user);
     }
 
 }

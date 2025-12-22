@@ -1,6 +1,6 @@
 package com.pragma.powerup.application.handler;
 
-import com.pragma.powerup.application.dto.request.EmployedRequestDto;
+
 import com.pragma.powerup.application.dto.request.UserRequestDto;
 import com.pragma.powerup.application.dto.response.UserResponseDto;
 
@@ -8,6 +8,6 @@ import com.pragma.powerup.application.dto.response.UserResponseDto;
 public interface IUserHandler {
 
    UserResponseDto createOwner(UserRequestDto userRequestDto);
-   void createEmployed(EmployedRequestDto dto, Long restaurantId);
-
+   void createEmployed(UserRequestDto dto, Long restaurantId);
+   void registerClient(UserRequestDto dto);
 }

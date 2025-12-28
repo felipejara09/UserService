@@ -64,4 +64,8 @@ public class UserRestController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    // no publico
+
+
+
 }

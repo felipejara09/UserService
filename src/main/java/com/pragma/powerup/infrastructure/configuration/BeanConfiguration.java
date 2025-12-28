@@ -1,12 +1,11 @@
 package com.pragma.powerup.infrastructure.configuration;
 
 import com.pragma.powerup.domain.api.IAuthService;
+import com.pragma.powerup.domain.api.IEmployeeRestaurantService;
 import com.pragma.powerup.domain.api.IUserService;
-import com.pragma.powerup.domain.spi.IJwtProviderPort;
-import com.pragma.powerup.domain.spi.IPasswordEncoderPort;
-import com.pragma.powerup.domain.spi.IRestaurantExternalServicePort;
-import com.pragma.powerup.domain.spi.IUserPersistencePort;
+import com.pragma.powerup.domain.spi.*;
 import com.pragma.powerup.domain.usecase.AuthUseCase;
+import com.pragma.powerup.domain.usecase.EmployeeRestaurantUseCase;
 import com.pragma.powerup.domain.usecase.UserUseCase;
 import com.pragma.powerup.domain.validation.UserBusinessValidator;
 import com.pragma.powerup.domain.validation.UserDataValidator;
@@ -93,5 +92,10 @@ public class BeanConfiguration {
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    public IEmployeeRestaurantService employeeRestaurantService(IEmployeeRestaurantQueryPort port) {
+        return new EmployeeRestaurantUseCase(port);
     }
 }

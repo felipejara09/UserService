@@ -73,5 +73,22 @@ public class UserUseCase implements IUserService {
         persistence.save(user);
     }
 
+    @Override
+    public String getUserPhoneNumber(Long userId){
+        if (userId == null || userId <=0){
+            throw new InvalidUserIdException();
+        }
+        User user = persistence.findById(userId);
+        if (user == null) {
+            throw new UserNotFoundException();
+        }
+
+        if (user.getPhoneNumber() == null || user.getPhoneNumber().isBlank()) {
+            throw new UserPhoneNotFoundException();
+        }
+
+        return user.getPhoneNumber();
+    }
+
 }
 

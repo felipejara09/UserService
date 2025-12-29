@@ -6,4 +6,5 @@ public interface IUserService {
     void createOwner(User user);
     void createEmployed(User employed, Long restaurantId, String token);
     void registerClient(User user);
+    String getUserPhoneNumber(Long userId);
 }

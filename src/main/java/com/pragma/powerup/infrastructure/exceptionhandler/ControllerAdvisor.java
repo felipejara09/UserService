@@ -16,7 +16,9 @@ public class ControllerAdvisor {
             InvalidPhoneException.class,
             InvalidDocumentException.class,
             UnderAgeException.class,
-            InvalidRoleException.class
+            InvalidRoleException.class,
+            InvalidUserIdException.class,
+            UserPhoneNotFoundException.class
     })
     public ResponseEntity<ExceptionResponse> handleBadRequest(RuntimeException ex) {
         ExceptionResponse response = new ExceptionResponse(
@@ -43,4 +45,13 @@ public class ControllerAdvisor {
         );
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
+
+
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleNotFound(UserNotFoundException ex) {
+        ExceptionResponse response = new ExceptionResponse(ex.getMessage(), HttpStatus.NOT_FOUND.toString());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
 }

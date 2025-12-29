@@ -10,4 +10,5 @@ public interface IUserHandler {
    UserResponseDto createOwner(UserRequestDto userRequestDto);
    void createEmployed(UserRequestDto dto, Long restaurantId);
    void registerClient(UserRequestDto dto);
+   String getUserPhoneNumber(Long userId);
 }

@@ -47,4 +47,9 @@ public class UserHandler implements IUserHandler {
         userServicePort.registerClient(userRequestMapper.toClient(dto));
     }
 
+    @Override
+    public String getUserPhoneNumber(Long userId) {
+        return userServicePort.getUserPhoneNumber(userId);
+    }
+
 }

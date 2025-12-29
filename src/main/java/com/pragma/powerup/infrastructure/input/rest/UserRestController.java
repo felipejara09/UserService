@@ -64,7 +64,13 @@ public class UserRestController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    // no publico
+    @PreAuthorize("hasAnyRole('ADMIN','EMPLOYED','OWNER')")
+    @GetMapping("/{userId}/phone")
+    public ResponseEntity<String> getUserPhone(@PathVariable Long userId) {
+        return ResponseEntity.ok(userHandler.getUserPhoneNumber(userId));
+    }
+
+
 
 
 

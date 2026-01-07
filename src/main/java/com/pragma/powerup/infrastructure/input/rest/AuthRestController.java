@@ -25,14 +25,20 @@ public class AuthRestController {
     private final IAuthHandler authHandler;
 
     @Operation(
-            summary = "Logear usuario",
-            description = "permite que el usuario se loge con su email y password"
+            summary = "User login",
+            description = "Allows a user to authenticate using email and password and receive a JWT token."
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login",
-                    content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos",
-                    content = @Content),
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "User authenticated successfully",
+                    content = @Content(schema = @Schema(implementation = AuthResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid credentials or invalid input data",
+                    content = @Content
+            )
     })
 
     @PostMapping("/login")

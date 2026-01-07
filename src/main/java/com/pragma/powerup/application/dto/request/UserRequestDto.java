@@ -1,8 +1,8 @@
 package com.pragma.powerup.application.dto.request;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
+
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -10,8 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter
-@Setter
-@Data
+@AllArgsConstructor
 public class UserRequestDto {
     @NotBlank(message = "Name is required")
     private String name;

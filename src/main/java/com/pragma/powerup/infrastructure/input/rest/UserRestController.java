@@ -25,17 +25,32 @@ public class UserRestController {
     private final IUserHandler userHandler;
 
     @Operation(
-            summary = "Crear propietario",
-            description = "Permite al usuario Administrador crear la cuenta de un propietario de restaurante."
+            summary = "Create restaurant owner",
+            description = "Allows an administrator to create a restaurant owner account."
     )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Propietario creado correctamente",
-                    content = @Content(schema = @Schema(implementation = UserResponseDto.class))),
-            @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos",
-                    content = @Content),
-            @ApiResponse(responseCode = "409", description = "Correo ya registrado",
-                    content = @Content)
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Restaurant owner created successfully",
+                    content = @Content(schema = @Schema(implementation = UserResponseDto.class))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid input data",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Email address is already registered",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied. Only administrators can create owners",
+                    content = @Content
+            )
     })
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("admin/owners")
@@ -47,6 +62,28 @@ public class UserRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(
+            summary = "Create employee",
+            description = "Allows a restaurant owner to create an employee and assign them to their restaurant."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Employee created successfully",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid input data or business rules violated",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied. Only restaurant owners can create employees",
+                    content = @Content
+            )
+    })
+
     @PreAuthorize("hasRole('OWNER')")
     @PostMapping("/restaurants/{restaurantId}/employees")
     @ResponseStatus(HttpStatus.CREATED)
@@ -57,12 +94,56 @@ public class UserRestController {
         userHandler.createEmployed(request, restaurantId);
     }
 
+    @Operation(
+            summary = "Register client",
+            description = "Allows a user to register as a client in the platform."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Client registered successfully",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid input data",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Email address is already registered",
+                    content = @Content
+            )
+    })
 
     @PostMapping("/clients")
     public ResponseEntity<Void> registerClient(@Valid @RequestBody UserRequestDto dto) {
         userHandler.registerClient(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @Operation(
+            summary = "Get user phone number",
+            description = "Allows authorized users to retrieve the phone number of a specific user."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "User phone number retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = String.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied. User does not have permission to access this resource",
+                    content = @Content
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "User not found",
+                    content = @Content
+            )
+    })
+
 
     @PreAuthorize("hasAnyRole('ADMIN','EMPLOYED','OWNER')")
     @GetMapping("/{userId}/phone")

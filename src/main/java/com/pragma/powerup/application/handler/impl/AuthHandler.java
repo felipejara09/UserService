@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 public class AuthHandler implements IAuthHandler {
 
     private final IAuthService authService;
-    private final IUserPersistencePort userPersistencePort;
 
     @Override
     public AuthResponseDto login(AuthRequestDto authRequestDto) {

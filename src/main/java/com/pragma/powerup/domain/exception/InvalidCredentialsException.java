@@ -1,6 +1,6 @@
 package com.pragma.powerup.domain.exception;
 
-public class InvalidCredentialsException extends RuntimeException {
+public class InvalidCredentialsException extends DomainException {
     public InvalidCredentialsException() {
         super("Invalid email or password");
     }

@@ -1,83 +1,209 @@
 package com.pragma.powerup.domain.usecase;
 
-import com.pragma.powerup.domain.exception.EmailAlreadyExistsException;
-import com.pragma.powerup.domain.exception.InvalidEmailException;
+import com.pragma.powerup.domain.exception.*;
 import com.pragma.powerup.domain.model.User;
 import com.pragma.powerup.domain.spi.IPasswordEncoderPort;
+import com.pragma.powerup.domain.spi.IRestaurantExternalServicePort;
 import com.pragma.powerup.domain.spi.IUserPersistencePort;
 import com.pragma.powerup.domain.util.RoleConstants;
 import com.pragma.powerup.domain.validation.UserBusinessValidator;
 import com.pragma.powerup.domain.validation.UserDataValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class UserUseCaseTest {
 
-    @Mock
     private IUserPersistencePort persistence;
-
-    @Mock
     private IPasswordEncoderPort passwordEncoder;
-
-    @Mock
+    private IRestaurantExternalServicePort restaurantService;
     private UserDataValidator dataValidator;
-
-    @Mock
     private UserBusinessValidator businessValidator;
 
-    @InjectMocks
     private UserUseCase useCase;
-
-    private User user;
 
     @BeforeEach
     void setUp() {
-        user = new User();
-        user.setEmail("test@mail.com");
-        user.setPassword("123");
-        user.setRoleId(RoleConstants.ROLE_OWNER);
+        persistence = mock(IUserPersistencePort.class);
+        passwordEncoder = mock(IPasswordEncoderPort.class);
+        restaurantService = mock(IRestaurantExternalServicePort.class);
+        dataValidator = mock(UserDataValidator.class);
+        businessValidator = mock(UserBusinessValidator.class);
+
+        useCase = new UserUseCase(
+                persistence,
+                passwordEncoder,
+                restaurantService,
+                dataValidator,
+                businessValidator
+        );
     }
+
 
     @Test
     void shouldCreateOwnerSuccessfully() {
 
-        when(passwordEncoder.encode("123")).thenReturn("encoded123");
+        User user = buildUser();
+
+        when(passwordEncoder.encode("password"))
+                .thenReturn("encoded");
 
         useCase.createOwner(user);
 
+        assertEquals(RoleConstants.ROLE_OWNER, user.getRoleId());
+        assertEquals("encoded", user.getPassword());
+
         verify(dataValidator).validate(user);
         verify(businessValidator).validate(user);
-        verify(passwordEncoder).encode("123");
         verify(persistence).save(user);
-
-        assertEquals("encoded123", user.getPassword());
     }
 
     @Test
-    void shouldThrowWhenDataValidatorFails() {
-        doThrow(new InvalidEmailException()).when(dataValidator).validate(user);
+    void shouldThrowExceptionWhenOwnerDataIsInvalid() {
 
-        assertThrows(InvalidEmailException.class, () -> useCase.createOwner(user));
+        User user = buildUser();
 
-        verify(businessValidator, never()).validate(any());
+        doThrow(new IllegalArgumentException())
+                .when(dataValidator).validate(user);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> useCase.createOwner(user)
+        );
+
+        verify(persistence, never()).save(any());
+    }
+
+
+    @Test
+    void shouldCreateEmployeeSuccessfully() {
+
+        User user = buildUser();
+
+        when(restaurantService.isRestaurantOwnedBy(1L, "token"))
+                .thenReturn(true);
+
+        when(passwordEncoder.encode("password"))
+                .thenReturn("encoded");
+
+        useCase.createEmployed(user, 1L, "token");
+
+        assertEquals(RoleConstants.ROLE_EMPLOYEE, user.getRoleId());
+        assertEquals(1L, user.getRestaurantId());
+
+        verify(persistence).save(user);
+    }
+
+    @Test
+    void shouldThrowForbiddenWhenRestaurantNotOwned() {
+
+        User user = buildUser();
+
+        when(restaurantService.isRestaurantOwnedBy(1L, "token"))
+                .thenReturn(false);
+
+        assertThrows(
+                ForbiddenRestaurantAccessException.class,
+                () -> useCase.createEmployed(user, 1L, "token")
+        );
+
         verify(persistence, never()).save(any());
     }
 
     @Test
-    void shouldThrowWhenBusinessValidatorFails() {
-        doThrow(new EmailAlreadyExistsException()).when(businessValidator).validate(user);
+    void shouldThrowExceptionWhenEmployeeHasNoRestaurant() {
 
-        assertThrows(EmailAlreadyExistsException.class, () -> useCase.createOwner(user));
+        User user = buildUser();
+        
+        when(restaurantService.isRestaurantOwnedBy(null, "token"))
+                .thenReturn(true);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> useCase.createEmployed(user, null, "token")
+        );
 
         verify(persistence, never()).save(any());
+    }
+
+
+
+
+    @Test
+    void shouldRegisterClientSuccessfully() {
+
+        User user = buildUser();
+
+        when(passwordEncoder.encode("password"))
+                .thenReturn("encoded");
+
+        useCase.registerClient(user);
+
+        assertEquals(RoleConstants.ROLE_CLIENT, user.getRoleId());
+        assertEquals("encoded", user.getPassword());
+
+        verify(persistence).save(user);
+    }
+
+    @Test
+    void shouldReturnUserPhoneNumberSuccessfully() {
+
+        User user = buildUser();
+        user.setPhoneNumber("3001234567");
+
+        when(persistence.findById(1L))
+                .thenReturn(user);
+
+        String phone =
+                useCase.getUserPhoneNumber(1L);
+
+        assertEquals("3001234567", phone);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserIdIsInvalid() {
+
+        assertThrows(
+                InvalidUserIdException.class,
+                () -> useCase.getUserPhoneNumber(0L)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserNotFound() {
+
+        when(persistence.findById(1L))
+                .thenReturn(null);
+
+        assertThrows(
+                UserNotFoundException.class,
+                () -> useCase.getUserPhoneNumber(1L)
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenPhoneIsMissing() {
+
+        User user = buildUser();
+        user.setPhoneNumber("");
+
+        when(persistence.findById(1L))
+                .thenReturn(user);
+
+        assertThrows(
+                UserPhoneNotFoundException.class,
+                () -> useCase.getUserPhoneNumber(1L)
+        );
+    }
+
+
+    private User buildUser() {
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@test.com");
+        user.setPassword("password");
+        return user;
     }
 }
